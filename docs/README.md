@@ -9,19 +9,14 @@ title:
 
 [comment]: # "This is the standard layout for the project, but you can clean this and use your own template"
 
-# Project Title
+# Smart Cooling System for a Machinery Room
 
 ---
 
-This is a sample image, to show how to add images to your page. To learn more options, please refer [this](https://projects.ce.pdn.ac.lk/docs/faq/how-to-add-an-image/)
-
-![Sample Image](./images/sample.png)
-
-
 ## Team
--  eNumber, Name, [email](mailto:name@email.com)
--  eNumber, Name, [email](mailto:name@email.com)
--  eNumber, Name, [email](mailto:name@email.com)
+-  e18354, Ruchira Tharaka, [e18354@eng.pdn.ac.lk](mailto:name@email.com)
+-  e18318, Piyumali Sandunika, [e18318@eng.pdn.ac.lk](mailto:name@email.com)
+-  e18022, Didula Induwara, [e18022@eng.pdn.ac.lk](mailto:name@email.com)
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -32,8 +27,7 @@ This is a sample image, to show how to add images to your page. To learn more op
 
 ## Introduction
 
- description of the real world problem and solution, impact
-
+ The aim of this project is to design a cooling system which is automatically controlled according to the temperature of a particular room. This system is useful, especially in the cooling of machinery which generates a lot of heat during operation. This heat can be caused to damage the machinery and reduce its lifetime. The system uses temperature sensors to measure the temperature of the machinery, and the microcontroller could control the speed of the cooling fans based on the temperature data received. It also includes an alert system to notify if the temperature exceeds safe limits
 ## Other Sub Topics
 
 .....
