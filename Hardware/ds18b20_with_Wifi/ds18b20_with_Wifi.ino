@@ -16,6 +16,8 @@
 //Initializing the buzzer at D3
 int buzzer = D3;
 
+int seqNo = 0;
+
 // Define NTP Client to get time
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
@@ -53,6 +55,10 @@ void updateSpeed(void Speed){
   analogWrite(fan,Speed*124);
 }
 
+void updateSeqNo(int No){
+  seqNo = No;  
+}
+
 void takeTime(){
   while(!timeClient.update()) {
     timeClient.forceUpdate();
@@ -83,7 +89,7 @@ void callback(char* topic, byte* payload, unsigned int length){
 
 void sendTemperature(long Temp){
   //This function will send temperature to the broker (in json format)
-  snprintf(msg,200,"{\"temperature\": %f, \"date\": \"%s\", \"time\": \"%s\"}",Temp,dayStamp,timeStamp);
+  snprintf(msg,200,"{\"No\": %d, \"date\": \"%s\", \"time\": \"%s\", \"temperature\": %f}",seqNo,dayStamp,timeStamp,Temp);
   client.publish("UoP_CO_326_E18_05_Temp",msg);
 }
 
