@@ -88,3 +88,11 @@ connection = pymysql.connect(
 
 # create cursor
 cursor = connection.cursor() 
+
+connected = False
+MessageRecieved = False
+
+broker_address = "192.168.22.113"
+port = 1883
+user = "serverCO326"
+password = "group5"
