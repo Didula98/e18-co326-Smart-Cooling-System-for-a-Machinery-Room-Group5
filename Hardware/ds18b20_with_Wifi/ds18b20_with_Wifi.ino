@@ -15,8 +15,6 @@
 
 const long utcOffsetInSeconds = 3600;
 
-char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-
 //Initializing the buzzer at D3
 int buzzer = D3;
 
@@ -63,11 +61,8 @@ void updateSpeed(int Speed){
   analogWrite(fan,Speed*124);
 }
 
-void updateSeqNo(int No){
-  seqNo = No;  
-}
-
 void takeTime(){
+  /*Take the time and the date*/
   time_t epochTime = timeClient.getEpochTime();
   struct tm *ptm = gmtime ((time_t *)&epochTime);
   Year = ptm->tm_year+1900;
@@ -96,9 +91,8 @@ char msg[300];
 void sendTemperature(float Temp){
   //This function will send temperature to the broker (in json format)
   takeTime();
-  snprintf(msg,200,"{\"Date&Time\": \"%d:%d:%d:%d:%d:%d\",\"Temperature\": %f}",Year,Month,Date,Hours,Minutes,Seconds,Temp);
-  
-  //snprintf(msg,200,"{\"No\": %d, \"date\": \"%s\", \"time\": \"%s\", \"temperature\": %f}",seqNo,dayStamp,timeStamp,Temp);
+  snprintf(msg,200,"{\"DateTime\": \"%d-%d-%d %d:%d:%d\",\"Temperature\": %f}",Year,Month,Date,Hours,Minutes,Seconds,Temp);
+//  https://how2electronics.com/iot-temperature-based-fan-speed-control-monitoring-system/
   client.publish("UoP/CO/326/E18/5/DS18B20temp",msg);
 }
 
