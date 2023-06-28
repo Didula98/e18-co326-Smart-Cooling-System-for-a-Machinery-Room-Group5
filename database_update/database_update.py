@@ -74,4 +74,17 @@ def on_message(client, userdata, message):
         connection.commit()
 
 
-     
+
+
+
+
+# create connection with database
+connection = pymysql.connect(
+    host = 'localhost',
+    user = 'root',
+    password = 'di@62992',
+    database = 'smart_cooling_system'
+)
+
+# create cursor
+cursor = connection.cursor() 
