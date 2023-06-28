@@ -1,0 +1,11 @@
+CREATE DATABASE smart_cooling_system;
+
+USE smart_cooling_system;
+
+CREATE TABLE controller_data(
+	id VARCHAR(36),
+	temperature FLOAT NOT NULL,
+	sent_time TIMESTAMP NOT NULL,
+	received_time TIMESTAMP NOT NULL,
+	rtc_time TIME NOT NULL
+);
