@@ -96,3 +96,23 @@ broker_address = "192.168.22.113"
 port = 1883
 user = "serverCO326"
 password = "group5"
+
+# connect to the broker
+client = mqttclient.Client("MQTT")
+client.username_pw_set(user, password=password)
+client.on_connect = on_connect
+client.on_message = on_message
+client.connect(broker_address, port=port)
+
+client.loop_start()
+
+client.subscribe("UoP/CO/326/E18/5/#")
+
+while connected != True:
+    time.sleep(0.2)
+
+while MessageRecieved != True:
+    time.sleep(0.2)
+
+
+client.loop_stop()
