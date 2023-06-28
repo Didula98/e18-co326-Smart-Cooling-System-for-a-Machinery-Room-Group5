@@ -13,26 +13,36 @@
 // Data wire is plugged into digital pin 2 on the Arduino
 #define ONE_WIRE_BUS 2  //D4
 
+const long utcOffsetInSeconds = 3600;
+
+char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+
 //Initializing the buzzer at D3
 int buzzer = D3;
 
+int seqNo = 0;
+int Year = 0;
+int Month = 0;
+int Date = 0;
+int Hours = 0;
+int Minutes = 0;
+int Seconds = 0;
+
+
 // Define NTP Client to get time
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP);
+NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
 //SSID and the password of Wifi connection
-char* ssid = "Dialog 4G 517";
-char* password = "576E5Fc3";
-const char* mqtt_server = "192.168.41.113";
+//char* ssid = "Dialog 4G 517";
+//char* password = "576E5Fc3";
+char* ssid = "Piyu";
+char* password = "u54bxejz";
+const char* mqtt_server = "192.168.22.113";
 
 //Username and the password of mqtt broker
 char* userName="serverCO326";
 char* passWord="group5";
-
-// Variables to save date and time
-String formattedDate;
-String dayStamp;
-String timeStamp;
 
 //Initializing fan
 uint8_t fan = 3;  //Rx pin (GPIO3)(green wire)
@@ -48,24 +58,24 @@ PubSubClient client(espClient);
 
 int speed=0;    //Speed will be a integer between 0 and 10
 
-void updateSpeed(void Speed){
+void updateSpeed(int Speed){
   //This function updates the speed of the fan by writing to the pin connected to the fan
   analogWrite(fan,Speed*124);
 }
 
-void takeTime(){
-  while(!timeClient.update()) {
-    timeClient.forceUpdate();
-  }
-  // The formattedDate comes with the following format:
-  // 2018-05-28T16:00:13Z
-  // We need to extract date and time
-  formattedDate = timeClient.getFormattedDate();
-  Serial.println(formattedDate);
+void updateSeqNo(int No){
+  seqNo = No;  
+}
 
-  int splitT = formattedDate.indexOf("T");
-  dayStamp = formattedDate.substring(0, splitT);    // Extract date
-  timeStamp = formattedDate.substring(splitT+1, formattedDate.length()-1);    // Extract time
+void takeTime(){
+  time_t epochTime = timeClient.getEpochTime();
+  struct tm *ptm = gmtime ((time_t *)&epochTime);
+  Year = ptm->tm_year+1900;
+  Month = ptm->tm_mon+1;
+  Date = ptm->tm_mday;
+  Hours = timeClient.getHours();
+  Minutes = timeClient.getMinutes();
+  Seconds = timeClient.getSeconds();
 }
 
 void callback(char* topic, byte* payload, unsigned int length){
@@ -81,10 +91,15 @@ void callback(char* topic, byte* payload, unsigned int length){
   Serial.println();
 }
 
-void sendTemperature(long Temp){
+char msg[300];
+
+void sendTemperature(float Temp){
   //This function will send temperature to the broker (in json format)
-  snprintf(msg,200,"{\"temperature\": %f, \"date\": \"%s\", \"time\": \"%s\"}",Temp,dayStamp,timeStamp);
-  client.publish("UoP_CO_326_E18_05_Temp",msg);
+  takeTime();
+  snprintf(msg,200,"{\"Date&Time\": \"%d:%d:%d:%d:%d:%d\",\"Temperature\": %f}",Year,Month,Date,Hours,Minutes,Seconds,Temp);
+  
+  //snprintf(msg,200,"{\"No\": %d, \"date\": \"%s\", \"time\": \"%s\", \"temperature\": %f}",seqNo,dayStamp,timeStamp,Temp);
+  client.publish("UoP/CO/326/E18/5/DS18B20temp",msg);
 }
 
 void setup_wifi(){
@@ -117,7 +132,7 @@ void reconnect() {
     String clientId = "ESP8266Client-";
     clientId += String(random(0xffff), HEX);
     // Attempt to connect
-    if (client.connect(clientId,userName,passWord)) {
+    if (client.connect("qwdqd","serverCO326","group5")) {
       Serial.println("connected");
       client.subscribe("UoP_CO_326_E18_GrNo_Fan");
     } else {
@@ -146,20 +161,20 @@ void setup(void)
 
   // Initialize a NTPClient to get time
   timeClient.begin();
-  timeClient.setTimeOffset(3600);
+  timeClient.setTimeOffset(19800);
 }
 
 float temp;
 long lastMsg;
 
-void loop(void)
-{ 
+void loop(){
+  timeClient.update();
   if(!client.connected()){
     reconnect();    
   }
   client.loop();
   long now = millis();
-  if(now-lastMsg>2000){
+  if(now-lastMsg>1000){
     lastMsg = now;
     // Send the command to get temperatures
     sensors.requestTemperatures(); 
@@ -169,7 +184,7 @@ void loop(void)
     temp = sensors.getTempCByIndex(0);
     Serial.print(temp);
     Serial.print((char)176);//shows degrees character
-    Serial.print("C");
+    Serial.print("C\n");
 
     sendTemperature(temp);
 
