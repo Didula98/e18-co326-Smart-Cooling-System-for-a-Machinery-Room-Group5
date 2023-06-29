@@ -32,11 +32,11 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
 //SSID and the password of Wifi connection
-//char* ssid = "Dialog 4G 517";
-//char* password = "576E5Fc3";
-char* ssid = "Piyu";
-char* password = "u54bxejz";
-const char* mqtt_server = "192.168.22.113";
+char* ssid = "Dialog 4G 517";
+char* password = "576E5Fc3";
+//char* ssid = "Piyu";
+//char* password = "u54bxejz";
+const char* mqtt_server = "192.168.8.166";
 
 //Username and the password of mqtt broker
 char* userName="serverCO326";
