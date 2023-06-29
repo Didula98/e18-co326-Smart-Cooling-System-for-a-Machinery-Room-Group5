@@ -6,7 +6,6 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <Wire.h>
-#include "MAX30100_PulseOximeter.h"
 #include <TinyGPS++.h>
 #include <SoftwareSerial.h>
 
@@ -15,10 +14,11 @@
 
 const long utcOffsetInSeconds = 3600;
 
+boolean fanStatus = false; 
+
 //Initializing the buzzer at D3
 int buzzer = D3;
 
-int seqNo = 0;
 int Year = 0;
 int Month = 0;
 int Date = 0;
@@ -32,11 +32,11 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
 //SSID and the password of Wifi connection
-//char* ssid = "Dialog 4G 517";
-//char* password = "576E5Fc3";
-char* ssid = "Piyu";
-char* password = "u54bxejz";
-const char* mqtt_server = "192.168.22.113";
+char* ssid = "Dialog 4G 517";
+char* password = "576E5Fc3";
+//char* ssid = "Piyu";
+//char* password = "u54bxejz";
+const char* mqtt_server = "192.168.8.166";
 
 //Username and the password of mqtt broker
 char* userName="serverCO326";
@@ -54,11 +54,26 @@ DallasTemperature sensors(&oneWire);
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-int speed=0;    //Speed will be a integer between 0 and 10
+String speedLevel= "O";    //Speed will be a integer between 0 and 10
+int speedLevels[] = {0,127,255,383,511,639,767,895,1023}; //Speed levels
 
-void updateSpeed(int Speed){
+void updateSpeed(String Speed){
   //This function updates the speed of the fan by writing to the pin connected to the fan
-  analogWrite(fan,Speed*124);
+  Serial.println(Speed+" new speed");
+  speedLevel = Speed;
+  char Mode = Speed[0];
+  if(Mode=='O'){
+    analogWrite(fan,0);
+  }else if(Mode=='S'){
+    analogWrite(fan,0);
+  }else{
+    int s = Speed.substring(1).toInt();
+    if(Mode=='M'){
+      analogWrite(fan,speedLevels[s]);
+    }else if(Mode=='A'){
+      analogWrite(fan,s);
+    }    
+  }
 }
 
 void takeTime(){
@@ -74,16 +89,27 @@ void takeTime(){
 }
 
 void callback(char* topic, byte* payload, unsigned int length){
-  //This function will receive incoming packets and call neccessary functions 
-  Serial.print("Message arrived [");
-  Serial.print(topic);
   String receivedMsg = "";
+  String OFF = "O";
+  String ON = "S";
   for(int i=0;i<length;i++){
     receivedMsg = receivedMsg + (char)payload[i];    
   }
-  
-  updateSpeed(speed); //update the speed  
-  Serial.println();
+  Serial.println(topic);
+  Serial.println(receivedMsg);
+  if(!strcmp(topic,(char*)"UoP/CO/326/E18/5/PowerController")){
+    if(!strcmp(receivedMsg.c_str(),(char*)"ON")){
+      fanStatus = true;
+      updateSpeed(ON);  
+    }else{
+      fanStatus = false;
+      updateSpeed(OFF);
+    }
+  }else if(!strcmp(topic,(char*)"UoP/CO/326/E18/5/LevelController")){
+    if(fanStatus){
+      updateSpeed(receivedMsg); //update the speed      
+    }
+  }
 }
 
 char msg[300];
@@ -128,7 +154,8 @@ void reconnect() {
     // Attempt to connect
     if (client.connect("qwdqd","serverCO326","group5")) {
       Serial.println("connected");
-      client.subscribe("UoP_CO_326_E18_GrNo_Fan");
+      client.subscribe("UoP/CO/326/E18/5/PowerController");
+      client.subscribe("UoP/CO/326/E18/5/LevelController");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -144,10 +171,11 @@ void setup(void)
   sensors.begin();  // Start up the library
   pinMode(buzzer,OUTPUT);  //Set D3 as output for buzzer
   pinMode(fan,OUTPUT);
+//  analogWriteFreq(new_frequency);
+  analogWriteRange(1023);
   analogWrite(fan,0);
   Serial.begin(115200);
   Serial.setDebugOutput(true);
-
   setup_wifi();
   delay(1000);
   client.setServer(mqtt_server, 1883);
@@ -176,9 +204,9 @@ void loop(){
     //print the temperature in Celsius
     Serial.print("Temperature: ");
     temp = sensors.getTempCByIndex(0);
-    Serial.print(temp);
-    Serial.print((char)176);//shows degrees character
-    Serial.print("C\n");
+//    Serial.print(temp);
+//    Serial.print((char)176);//shows degrees character
+//    Serial.print("C\n");
 
     sendTemperature(temp);
 
