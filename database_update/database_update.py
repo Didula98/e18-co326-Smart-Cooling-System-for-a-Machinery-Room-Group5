@@ -56,8 +56,6 @@ def on_message(client, userdata, message):
 
         # publish data to broker
         client.publish("UoP/CO/326/E18/5/ReceiveData", str(jsonlist))
-        cursor.close()
-        connection.close()
 
     
     elif str(message.topic) == "UoP/CO/326/E18/5/ReceiveData":
