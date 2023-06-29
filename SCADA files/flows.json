@@ -1,0 +1,1081 @@
+[
+    {
+        "id": "40c72a42c865ec2a",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "63c6b2debdfb9d7e",
+        "type": "mqtt in",
+        "z": "40c72a42c865ec2a",
+        "name": "Current Temperature",
+        "topic": "UoP/CO/326/E18/5/DS18B20temp",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "2de62883e74f53b6",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 270,
+        "y": 120,
+        "wires": [
+            [
+                "4f6b2f5fdf76b67f"
+            ]
+        ]
+    },
+    {
+        "id": "4b002f10c3955576",
+        "type": "ui_chart",
+        "z": "40c72a42c865ec2a",
+        "name": "Temperature Chart",
+        "group": "b25aa766192abd75",
+        "order": 4,
+        "width": "10",
+        "height": "6",
+        "label": "Temperature (*C) vs Time",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": true,
+        "ymin": "20",
+        "ymax": "40",
+        "removeOlder": "30",
+        "removeOlderPoints": "30",
+        "removeOlderUnit": "1",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 990,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "acd084d321e227ba",
+        "type": "ui_gauge",
+        "z": "40c72a42c865ec2a",
+        "name": "Temperature gauge",
+        "group": "b25aa766192abd75",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "gauge",
+        "label": "units",
+        "format": "{{value}}",
+        "min": "20",
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 990,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "4f6b2f5fdf76b67f",
+        "type": "json",
+        "z": "40c72a42c865ec2a",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": false,
+        "x": 490,
+        "y": 120,
+        "wires": [
+            [
+                "6af8c53db79dcfd9",
+                "6bea6cacb0e9d123",
+                "aa3f1784969366b7"
+            ]
+        ]
+    },
+    {
+        "id": "6af8c53db79dcfd9",
+        "type": "function",
+        "z": "40c72a42c865ec2a",
+        "name": "Digital Display",
+        "func": "var inputJSON = msg.payload; // Assuming the JSON string is in the payload\n\ntry {\n    var parsedJSON = JSON.parse(inputJSON);\n    var temperature = parseFloat(parsedJSON.Temperature);\n    var datetime = parsedJSON.DateTime;\n\n    // Assign the float value to the output message property\n    // msg.temperature = temperature;\n    var t = {payload: temperature};\n    var t2 = {payload: datetime};\n    return [t2,t];\n} catch (error) {\n    node.error(\"Failed to parse JSON: \" + error.message);\n    return null;\n}\n",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 720,
+        "y": 80,
+        "wires": [
+            [
+                "ba98cfbe792c806c"
+            ],
+            [
+                "bb90263c0e90a899"
+            ]
+        ]
+    },
+    {
+        "id": "aa3f1784969366b7",
+        "type": "function",
+        "z": "40c72a42c865ec2a",
+        "name": "Chart display",
+        "func": "var inputJSON = msg.payload; // Assuming the JSON string is in the payload\n\ntry {\n    var parsedJSON = JSON.parse(inputJSON);\n    var temperature = parseFloat(parsedJSON.Temperature);\n\n    // Assign the float value to the output message property\n    // msg.temperature = temperature;\n    var t = {\n        payload: temperature\n    };\n    return t;\n} catch (error) {\n    node.error(\"Failed to parse JSON: \" + error.message);\n    return null;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 240,
+        "wires": [
+            [
+                "4b002f10c3955576"
+            ]
+        ]
+    },
+    {
+        "id": "6bea6cacb0e9d123",
+        "type": "function",
+        "z": "40c72a42c865ec2a",
+        "name": "Display Analog",
+        "func": "var inputJSON = msg.payload; // Assuming the JSON string is in the payload\n\ntry {\n    var parsedJSON = JSON.parse(inputJSON);\n    var temperature = parseFloat(parsedJSON.Temperature);\n\n    // Assign the float value to the output message property\n    // msg.temperature = temperature;\n    var t = {\n        payload:temperature\n    };\n    return t;\n} catch (error) {\n    node.error(\"Failed to parse JSON: \" + error.message);\n    return null;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 720,
+        "y": 160,
+        "wires": [
+            [
+                "acd084d321e227ba",
+                "311d3a2437de825d"
+            ]
+        ]
+    },
+    {
+        "id": "ba98cfbe792c806c",
+        "type": "ui_text",
+        "z": "40c72a42c865ec2a",
+        "group": "b25aa766192abd75",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Date & Time",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "className": "",
+        "style": true,
+        "font": "",
+        "fontSize": "21",
+        "color": "#f7f971",
+        "x": 970,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "bb90263c0e90a899",
+        "type": "ui_text",
+        "z": "40c72a42c865ec2a",
+        "group": "b25aa766192abd75",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Temperature (Celcius)",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "className": "",
+        "style": true,
+        "font": "",
+        "fontSize": "21",
+        "color": "#edf05c",
+        "x": 1000,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "497804b2ab74d3fc",
+        "type": "ui_button",
+        "z": "40c72a42c865ec2a",
+        "name": "",
+        "group": "e0729702596ef763",
+        "order": 8,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "History",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "green",
+        "className": "",
+        "icon": "",
+        "payload": "get_data",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 260,
+        "y": 880,
+        "wires": [
+            [
+                "eacb7b74cf7c05cb"
+            ]
+        ]
+    },
+    {
+        "id": "eacb7b74cf7c05cb",
+        "type": "mqtt out",
+        "z": "40c72a42c865ec2a",
+        "name": "",
+        "topic": "UoP/CO/326/E18/5/SendData",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "2de62883e74f53b6",
+        "x": 610,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "23447602bd333a90",
+        "type": "mqtt in",
+        "z": "40c72a42c865ec2a",
+        "name": "",
+        "topic": "UoP/CO/326/E18/5/ReceiveData",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "2de62883e74f53b6",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 310,
+        "y": 960,
+        "wires": [
+            [
+                "787e2c4070268479"
+            ]
+        ]
+    },
+    {
+        "id": "30901c15880d48a2",
+        "type": "ui_table",
+        "z": "40c72a42c865ec2a",
+        "group": "e0729702596ef763",
+        "name": "Datasbase",
+        "order": 0,
+        "width": "10",
+        "height": "4",
+        "columns": [],
+        "outputs": 0,
+        "cts": false,
+        "x": 1030,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "9ae7ad7b71fdd050",
+        "type": "function",
+        "z": "40c72a42c865ec2a",
+        "name": "function 6",
+        "func": "var jsonString = msg.payload;\nvar a = JSON.parse(jsonString);\nvar g={\n    payload: a\n}\nreturn g;\n\n// // var jsonString=msg.payload;\n\n\n// // Get the array of objects from the MQTT node\n// const dataArray = msg.payload;\n\n// // Set the converted data as the message payload\n// msg.payload = {\n//     data: dataArray\n// };\n\n// // Return the modified message\n// return msg;\n// Parse the string into an array of objects\n// const dataArray = JSON.parse(msg.payload);\n\n// // Set the parsed data as the new payload\n// msg.payload = dataArray;\n\n// // Return the modified message\n// return msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 860,
+        "y": 960,
+        "wires": [
+            [
+                "30901c15880d48a2"
+            ]
+        ]
+    },
+    {
+        "id": "ed526073cb446dfb",
+        "type": "ui_button",
+        "z": "40c72a42c865ec2a",
+        "name": "AUTO/MANUAL",
+        "group": "a778e6b90df3eea9",
+        "order": 0,
+        "width": "3",
+        "height": "2",
+        "passthru": false,
+        "label": "MANUAL MODE",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "{{background}}",
+        "className": "",
+        "icon": "{{myicon}}",
+        "payload": "open",
+        "payloadType": "str",
+        "topic": "control",
+        "topicType": "msg",
+        "x": 320,
+        "y": 700,
+        "wires": [
+            [
+                "10568f7b51373629"
+            ]
+        ]
+    },
+    {
+        "id": "10568f7b51373629",
+        "type": "function",
+        "z": "40c72a42c865ec2a",
+        "name": "function 7",
+        "func": "let payload=msg.payload;\nlet state= context.get(\"state\");\n// if(msg.topic=='init'){\n//     state=\"open\";\n//     msg.payload=\"close\";\n//     msg.background = \"red\";\n//     msg.label=\"Press to start manual\";\n//     msg.myicon=\"fa-toggle-off\";\n//     msg.topic=\"control\";\n//     return msg;\n// }\n\n//toggle\nif(typeof state == \"undefined\"||state==\"close\"){\n    state = \"open\";\n    msg.payload = \"close\";\n    msg.background = \"red\";\n    msg.label = \"Press to Start manual\";\n    msg.myicon = \"fa-toggle-off\";\n    msg.topic = \"control\";\n    \n\n}\nelse{\n    state = \"close\";\n    msg.payload = \"open\";\n    msg.background = \"green\";\n    msg.label = \"Press to Start auto\";\n    msg.myicon = \"fa-toggle-on\";\n    msg.topic = \"control\";\n    \n\n}\n\ncontext.set(\"state\",state);\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 520,
+        "y": 700,
+        "wires": [
+            [
+                "3af62aa671b9a435",
+                "db8c579123c0895a",
+                "1fb5d3709a70b30c"
+            ]
+        ]
+    },
+    {
+        "id": "3af62aa671b9a435",
+        "type": "gate",
+        "z": "40c72a42c865ec2a",
+        "name": "Manual mode gate",
+        "controlTopic": "control",
+        "defaultState": "closed",
+        "openCmd": "open",
+        "closeCmd": "close",
+        "toggleCmd": "toggle",
+        "defaultCmd": "default",
+        "statusCmd": "status",
+        "persist": false,
+        "storeName": "memory",
+        "x": 590,
+        "y": 400,
+        "wires": [
+            [
+                "12d42c2b02df251a"
+            ]
+        ]
+    },
+    {
+        "id": "db8c579123c0895a",
+        "type": "gate",
+        "z": "40c72a42c865ec2a",
+        "name": "auto mode gate",
+        "controlTopic": "control",
+        "defaultState": "closed",
+        "openCmd": "close",
+        "closeCmd": "open",
+        "toggleCmd": "toggle",
+        "defaultCmd": "default",
+        "statusCmd": "status",
+        "persist": false,
+        "storeName": "memory",
+        "x": 980,
+        "y": 380,
+        "wires": [
+            [
+                "12d42c2b02df251a"
+            ]
+        ]
+    },
+    {
+        "id": "311d3a2437de825d",
+        "type": "function",
+        "z": "40c72a42c865ec2a",
+        "name": "LevelConverter",
+        "func": "let temp = msg.payload;\nlet t=0;\nlet auto = \"A\";\nif(temp < 20 ){\n    t=0;\n    msg.payload = auto.concat(t.toString());\n}\nelse if (temp > 40) {\n    t=1023;\n    msg.payload = auto.concat(t.toString());\n}\nelse{\n    t= Math.floor((temp-20)*51);\n    msg.payload = auto.concat(t.toString());\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 980,
+        "y": 280,
+        "wires": [
+            [
+                "db8c579123c0895a"
+            ]
+        ]
+    },
+    {
+        "id": "2793428ca4d9042e",
+        "type": "mqtt out",
+        "z": "40c72a42c865ec2a",
+        "name": "LevelController",
+        "topic": "UoP/CO/326/E18/5/LevelController",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "2de62883e74f53b6",
+        "x": 1240,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "e4281c3e32069e70",
+        "type": "function",
+        "z": "40c72a42c865ec2a",
+        "name": "CPU level to gauge",
+        "func": "\n\n\n// msg.payload = parseInt(text);\n// return text;\nlet temp = msg.payload;\nlet t = 0;\nif (temp.includes(\"M\")) {\n    t = temp.split(\"M\");\n    msg.payload=(parseInt(t[1])*128)-1;\n}\nelse {\n    t = temp.split(\"A\");\n    msg.payload = parseInt(t[1]);\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 990,
+        "y": 480,
+        "wires": [
+            [
+                "aba72625fd447574",
+                "e7c9eb1a63a2b5ea"
+            ]
+        ]
+    },
+    {
+        "id": "aba72625fd447574",
+        "type": "ui_gauge",
+        "z": "40c72a42c865ec2a",
+        "name": "CPU fan gauge",
+        "group": "6a1f301acfba7a59",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "gauge",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "1023",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 1240,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "57606a6a782f7dda",
+        "type": "ui_button",
+        "z": "40c72a42c865ec2a",
+        "name": "",
+        "group": "6a1f301acfba7a59",
+        "order": 3,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "Level 8",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "red",
+        "className": "",
+        "icon": "",
+        "payload": "M8",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 300,
+        "y": 340,
+        "wires": [
+            [
+                "3af62aa671b9a435"
+            ]
+        ]
+    },
+    {
+        "id": "4bdcee7697a39b77",
+        "type": "ui_button",
+        "z": "40c72a42c865ec2a",
+        "name": "",
+        "group": "6a1f301acfba7a59",
+        "order": 4,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "Level 7",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "red",
+        "className": "",
+        "icon": "",
+        "payload": "M7",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 300,
+        "y": 380,
+        "wires": [
+            [
+                "3af62aa671b9a435"
+            ]
+        ]
+    },
+    {
+        "id": "4c8de17f648268ab",
+        "type": "ui_button",
+        "z": "40c72a42c865ec2a",
+        "name": "",
+        "group": "6a1f301acfba7a59",
+        "order": 5,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "Level 6",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "red",
+        "className": "",
+        "icon": "",
+        "payload": "M6",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 300,
+        "y": 420,
+        "wires": [
+            [
+                "3af62aa671b9a435"
+            ]
+        ]
+    },
+    {
+        "id": "b378b98ce209a762",
+        "type": "ui_button",
+        "z": "40c72a42c865ec2a",
+        "name": "",
+        "group": "6a1f301acfba7a59",
+        "order": 6,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "Level 5",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "orange",
+        "className": "",
+        "icon": "",
+        "payload": "M5",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 300,
+        "y": 460,
+        "wires": [
+            [
+                "3af62aa671b9a435"
+            ]
+        ]
+    },
+    {
+        "id": "3a3b135185e55ddd",
+        "type": "ui_button",
+        "z": "40c72a42c865ec2a",
+        "name": "",
+        "group": "6a1f301acfba7a59",
+        "order": 7,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "Level 4",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "orange",
+        "className": "",
+        "icon": "",
+        "payload": "M4",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 300,
+        "y": 500,
+        "wires": [
+            [
+                "3af62aa671b9a435"
+            ]
+        ]
+    },
+    {
+        "id": "bc292ce52096be15",
+        "type": "ui_button",
+        "z": "40c72a42c865ec2a",
+        "name": "",
+        "group": "6a1f301acfba7a59",
+        "order": 8,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "Level 3",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "orange",
+        "className": "",
+        "icon": "",
+        "payload": "M3",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 300,
+        "y": 540,
+        "wires": [
+            [
+                "3af62aa671b9a435"
+            ]
+        ]
+    },
+    {
+        "id": "30026ffb27560ff4",
+        "type": "ui_button",
+        "z": "40c72a42c865ec2a",
+        "name": "",
+        "group": "6a1f301acfba7a59",
+        "order": 9,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "Level 2",
+        "tooltip": "",
+        "color": "black",
+        "bgcolor": "yellow",
+        "className": "",
+        "icon": "",
+        "payload": "M2",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 300,
+        "y": 580,
+        "wires": [
+            [
+                "3af62aa671b9a435"
+            ]
+        ]
+    },
+    {
+        "id": "33c236f5cc760690",
+        "type": "ui_button",
+        "z": "40c72a42c865ec2a",
+        "name": "",
+        "group": "6a1f301acfba7a59",
+        "order": 10,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "Level 1",
+        "tooltip": "",
+        "color": "black",
+        "bgcolor": "yellow",
+        "className": "",
+        "icon": "",
+        "payload": "M1",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 300,
+        "y": 620,
+        "wires": [
+            [
+                "3af62aa671b9a435"
+            ]
+        ]
+    },
+    {
+        "id": "1fb5d3709a70b30c",
+        "type": "change",
+        "z": "40c72a42c865ec2a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "msg.topic",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 420,
+        "y": 780,
+        "wires": [
+            [
+                "ed526073cb446dfb"
+            ]
+        ]
+    },
+    {
+        "id": "bd1aadaa648af4be",
+        "type": "ui_button",
+        "z": "40c72a42c865ec2a",
+        "name": "POWER",
+        "group": "a778e6b90df3eea9",
+        "order": 0,
+        "width": "3",
+        "height": "2",
+        "passthru": false,
+        "label": "POWER",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "{{background}}",
+        "className": "",
+        "icon": "{{myicon}}",
+        "payload": "open",
+        "payloadType": "str",
+        "topic": "control",
+        "topicType": "msg",
+        "x": 780,
+        "y": 680,
+        "wires": [
+            [
+                "6353ac7898d49955"
+            ]
+        ]
+    },
+    {
+        "id": "6353ac7898d49955",
+        "type": "function",
+        "z": "40c72a42c865ec2a",
+        "name": "function 10",
+        "func": "let payload=msg.payload;\nlet state= context.get(\"state\");\n// if(msg.topic=='init'){\n//     state=\"open\";\n//     msg.payload=\"close\";\n//     msg.background = \"red\";\n//     msg.label=\"Press to start manual\";\n//     msg.myicon=\"fa-toggle-off\";\n//     msg.topic=\"control\";\n//     return msg;\n// }\n\n//toggle\nif(typeof state == \"undefined\"||state==\"close\"){\n    state = \"open\";\n    msg.payload = \"close\";\n    msg.background = \"red\";\n    msg.label = \"Press to ON\";\n    msg.myicon = \"fa-toggle-off\";\n    msg.topic = \"control\";\n    // Get the current timestamp\n    const timestamp = new Date().toISOString();\n\n    // Convert timestamp into a readable format\n    const formattedTimestamp = new Date(timestamp).toLocaleString();\n\n    // Assign the float value to the output message property\n\n    var t = { payload: formattedTimestamp };\n    var msg2 = { payload: \"OFF\" };\n    // return msg;\n    \n\n}\nelse{\n    state = \"close\";\n    msg.payload = \"open\";\n    msg.background = \"green\";\n    msg.label = \"Press to OFF\";\n    msg.myicon = \"fa-toggle-on\";\n    msg.topic = \"control\";\n    \n    // Get the current timestamp\n    const timestamp = new Date().toISOString();\n\n    // Convert timestamp into a readable format\n    const formattedTimestamp = new Date(timestamp).toLocaleString();\n\n    // Assign the float value to the output message property\n\n    var t2 = { payload: formattedTimestamp };\n    var msg2 = { payload: \"ON\" };\n    // return msg;\n\n\n}\n\ncontext.set(\"state\",state);\nreturn [msg,t2,t,msg2];\n",
+        "outputs": 4,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 680,
+        "wires": [
+            [
+                "b029cce84eb8cb65",
+                "12d42c2b02df251a"
+            ],
+            [
+                "59e795ee291d0709"
+            ],
+            [
+                "c1314ce0b6538a0a"
+            ],
+            [
+                "81750e708b943e1b"
+            ]
+        ]
+    },
+    {
+        "id": "b029cce84eb8cb65",
+        "type": "change",
+        "z": "40c72a42c865ec2a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "msg.topic",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 860,
+        "y": 760,
+        "wires": [
+            [
+                "bd1aadaa648af4be"
+            ]
+        ]
+    },
+    {
+        "id": "12d42c2b02df251a",
+        "type": "gate",
+        "z": "40c72a42c865ec2a",
+        "name": "Power gate",
+        "controlTopic": "control",
+        "defaultState": "open",
+        "openCmd": "open",
+        "closeCmd": "close",
+        "toggleCmd": "toggle",
+        "defaultCmd": "default",
+        "statusCmd": "status",
+        "persist": false,
+        "storeName": "memory",
+        "x": 970,
+        "y": 580,
+        "wires": [
+            [
+                "e4281c3e32069e70",
+                "2793428ca4d9042e"
+            ]
+        ]
+    },
+    {
+        "id": "81750e708b943e1b",
+        "type": "mqtt out",
+        "z": "40c72a42c865ec2a",
+        "name": "PowerController",
+        "topic": "UoP/CO/326/E18/5/PowerController",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "2de62883e74f53b6",
+        "x": 1240,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "59e795ee291d0709",
+        "type": "ui_text",
+        "z": "40c72a42c865ec2a",
+        "group": "a778e6b90df3eea9",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Last Power ON  : ",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1240,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "c1314ce0b6538a0a",
+        "type": "ui_text",
+        "z": "40c72a42c865ec2a",
+        "group": "a778e6b90df3eea9",
+        "order": 9,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Last Power OFF :",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1250,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "ea5abf7b494e7e67",
+        "type": "function",
+        "z": "40c72a42c865ec2a",
+        "name": "function 11",
+        "func": "var myStr= msg.payload;\nvar newStr = myStr.replace(/'/g, \"\\\"\");\nvar t ={payload: newStr};\nreturn t;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 690,
+        "y": 960,
+        "wires": [
+            [
+                "9ae7ad7b71fdd050"
+            ]
+        ]
+    },
+    {
+        "id": "787e2c4070268479",
+        "type": "json",
+        "z": "40c72a42c865ec2a",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": false,
+        "x": 530,
+        "y": 960,
+        "wires": [
+            [
+                "ea5abf7b494e7e67"
+            ]
+        ]
+    },
+    {
+        "id": "e7c9eb1a63a2b5ea",
+        "type": "ui_chart",
+        "z": "40c72a42c865ec2a",
+        "name": "",
+        "group": "6a1f301acfba7a59",
+        "order": 2,
+        "width": "0",
+        "height": "0",
+        "label": "CPU fan speed vs Time",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "step",
+        "nodata": "",
+        "dot": true,
+        "ymin": "0",
+        "ymax": "1024",
+        "removeOlder": "10",
+        "removeOlderPoints": "10",
+        "removeOlderUnit": "1",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1270,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2de62883e74f53b6",
+        "type": "mqtt-broker",
+        "name": "CO326server",
+        "broker": "192.168.8.166",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "b25aa766192abd75",
+        "type": "ui_group",
+        "name": "Temperature",
+        "tab": "2ef6b52b.9ea0e8",
+        "order": 3,
+        "disp": true,
+        "width": "10",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "e0729702596ef763",
+        "type": "ui_group",
+        "name": "Past Records",
+        "tab": "2ef6b52b.9ea0e8",
+        "order": 5,
+        "disp": true,
+        "width": "10",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "a778e6b90df3eea9",
+        "type": "ui_group",
+        "name": "Power Controllers",
+        "tab": "2ef6b52b.9ea0e8",
+        "order": 4,
+        "disp": true,
+        "width": "10",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "6a1f301acfba7a59",
+        "type": "ui_group",
+        "name": "CPU Fan",
+        "tab": "2ef6b52b.9ea0e8",
+        "order": 2,
+        "disp": true,
+        "width": "10",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "2ef6b52b.9ea0e8",
+        "type": "ui_tab",
+        "name": "Dashboard",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]
